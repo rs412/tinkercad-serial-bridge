@@ -1,14 +1,15 @@
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>LED 开关控制</title>
+    <title>LED Switch Control</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "微软雅黑", sans-serif;
+            font-family: sans-serif;
         }
         body {
             width: 100vw;
@@ -45,17 +46,13 @@
             background: #2196F3;
             color: #fff;
             cursor: pointer;
-            /* 阴影模拟凸起按钮 */
             box-shadow: 0 6px 0 #1565C0, 0 8px 10px rgba(0,0,0,0.15);
             transition: all 0.1s ease;
         }
-        /* 鼠标悬浮 */
         #toggleBtn:hover {
             background: #1976D2;
         }
-        /* 鼠标按下：下压效果 */
         #toggleBtn:active {
-            /* 向下位移 + 缩小阴影，模拟按下去 */
             transform: translateY(4px);
             box-shadow: 0 2px 0 #1565C0, 0 4px 6px rgba(0,0,0,0.15);
         }
@@ -63,7 +60,7 @@
 </head>
 <body>
     <div class="led-icon led-off" id="ledIcon"></div>
-    <button id="toggleBtn">切换 LED 状态</button>
+    <button id="toggleBtn">Toggle LED State</button>
 
     <script>
         const BASE_URL = "http://localhost:8080";
@@ -74,7 +71,6 @@
         const toggleBtn = document.getElementById('toggleBtn');
         let currentLedState = "off";
 
-        // 轮询获取LED状态
         function syncStatus() {
             fetch(`${LOG_API}?t=${Date.now()}`)
             .then(res => res.text())
@@ -86,10 +82,9 @@
                     ledIcon.className = currentLedState === "on" ? "led-icon led-on" : "led-icon led-off";
                 } catch (e) {}
             })
-            .catch(err => console.error("读取状态失败", err));
+            .catch(err => console.error("Failed to read status", err));
         }
 
-        // 点击按钮发送指令
         toggleBtn.addEventListener('click', () => {
             const target = currentLedState === "on" ? "off" : "on";
             const sendJson = JSON.stringify({ led: target });
@@ -100,7 +95,7 @@
                 headers: {
                     "Content-Type": "text/plain"
                 }
-            }).catch(err => console.error("发送指令失败", err));
+            }).catch(err => console.error("Failed to send command", err));
         });
 
         setInterval(syncStatus, 2500);
