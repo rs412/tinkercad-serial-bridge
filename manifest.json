@@ -1,0 +1,30 @@
+{
+    "manifest_version": 3,
+    "name": "tinkercad-serial-bridge",
+    "version": "26.6.15",
+    "description": "Tinkercad serial bridge for data forwarding",
+    "permissions": ["storage"],
+    "host_permissions": [
+        "https://www.tinkercad.com/*",
+        "http://localhost:8080/*"
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "icon.png",
+            "48": "icon.png"
+        }
+    },
+    "icons": {
+        "16": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+    },
+    "content_scripts": [
+        {
+            "matches": ["https://www.tinkercad.com/*"],
+            "js": ["content.js"],
+            "run_at": "document_idle"
+        }
+    ]
+}
