@@ -1,5 +1,3 @@
-# README\_CN\.md
-
 # Tinkercad LED Remote Control Demo
 
 这个例子是 **tinkercad\-serial\-bridge 浏览器插件** 的实战演示案例。
