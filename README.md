@@ -63,3 +63,11 @@ tinkercad-serial-bridge/
 
 打开 Tinkercad 中的 Arduino 仿真项目并运行，开启插件桥接功能后，即可自动完成双向串口数据传输，实现仿真设备的联动控制。
 
+---
+
+## ✅ Author Info
+  Developer: rs412
+  
+  Email: redshift@yeah.net
+  
+  Github: https://github.com/rs412/tinkercad-serial-bridge
