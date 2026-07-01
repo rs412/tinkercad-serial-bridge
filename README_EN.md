@@ -64,6 +64,8 @@ Click the extension icon to open the settings panel:
 
 Open and run your Tinkercad Arduino simulation\. When the extension is enabled, it will automatically perform bidirectional serial data transmission to realize linkage control of simulation equipment\.
 
+<img width="1280" height="800" alt="1280x800-1" src="https://github.com/user-attachments/assets/7c22f065-014f-49fc-be82-437179511cf5" />
+
 ---
 
 ## ✅ Author Info
