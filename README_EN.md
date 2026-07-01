@@ -71,4 +71,4 @@ Open and run your Tinkercad Arduino simulation\. When the extension is enabled, 
   
   Email: redshift@yeah.net
   
-  Github: https://github.com/rs412/tinkercad-serial-bridge
+  Github: https://github.com/rs412/
