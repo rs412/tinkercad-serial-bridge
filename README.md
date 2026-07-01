@@ -1,4 +1,4 @@
-# tinkercad\-serial\-bridge
+# Tinkercad Serial Bridge
 
 一款轻量 MV3 浏览器插件，专为 Tinkercad Arduino 仿真实现双向串口数据通信。
 
