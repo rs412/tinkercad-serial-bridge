@@ -21,8 +21,8 @@
             gap: 40px;
         }
         .led-icon {
-            width: 100px;
-            height: 100px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
             border: 4px solid #666;
             background: #999;
@@ -31,7 +31,7 @@
         }
         .led-on {
             background: #ffd700;
-            box-shadow: 0 0 40px #ffd700, inset 0 0 20px #ffec8b;
+            box-shadow: 0 0 60px #ffd700, inset 0 0 20px #ffec8b;
         }
         .led-off {
             background: #999;
@@ -60,16 +60,13 @@
 <body>
     <div class="led-icon led-off" id="ledIcon"></div>
     <button id="toggleBtn">ON / OFF</button>
-
     <script>
         const BASE_URL = "http://localhost:8080";
         const CMD_API = `${BASE_URL}/cmd`;
         const LOG_API = `${BASE_URL}/getLog`;
-
         const ledIcon = document.getElementById('ledIcon');
         const toggleBtn = document.getElementById('toggleBtn');
         let currentLedState = "off";
-
         function syncStatus() {
             fetch(`${LOG_API}?t=${Date.now()}`)
             .then(res => res.text())
@@ -83,11 +80,9 @@
             })
             .catch(err => console.error("Failed to read status", err));
         }
-
         toggleBtn.addEventListener('click', () => {
             const target = currentLedState === "on" ? "off" : "on";
             const sendJson = JSON.stringify({ led: target });
-
             fetch(CMD_API, {
                 method: "POST",
                 body: sendJson,
@@ -96,7 +91,6 @@
                 }
             }).catch(err => console.error("Failed to send command", err));
         });
-
         setInterval(syncStatus, 2500);
         syncStatus();
     </script>
