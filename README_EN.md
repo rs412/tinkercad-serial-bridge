@@ -52,7 +52,7 @@ tinkercad-serial-bridge/
 
 Click the extension icon to open the settings panel:
 
-<img width="238" height="133" alt="image" src="https://github.com/user-attachments/assets/ffebd002-0490-4de3-b7f6-9ddcc767f1e3" />
+<img width="244" height="238" alt="e593b77405c06dac46dd328b5ee55bc7" src="https://github.com/user-attachments/assets/8ab1ed7c-24d4-4f9b-85f5-9e0e04a4aff8" />
 
 - **Server URL**: Fill in the communication service address \(default: `http://localhost:8080`\)
 
