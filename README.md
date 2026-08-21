@@ -54,8 +54,11 @@ tinkercad-serial-bridge/
 <img width="244" height="238" alt="e593b77405c06dac46dd328b5ee55bc7" src="https://github.com/user-attachments/assets/8ab1ed7c-24d4-4f9b-85f5-9e0e04a4aff8" />
 
 - **Server URL（服务地址）**：填写通信服务地址，默认本地地址 `http://localhost:8080`
+
 - **UploadInterval **：轮询间隔
+
 - **Cmd PollInterval **：命令拉取间隔
+
 - **Enable Bridge（启用桥接）**：开关控制通信功能开启/关闭
 
 - 点击「Save Settings」保存配置，立即生效
