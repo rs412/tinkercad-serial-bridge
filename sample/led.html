@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="eLhswK92aps5wgbVG9XaCU">
+<head data-page-node-id="7VPQP5dzj4bfXb15fDZCDE">
+    <meta charset="UTF-8" data-page-node-id="PPjQkhDEL1BfpU8walv2ul">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="ou0sZfCuFj54N8F3rsZTp8">
+    <title>Tinkercad LED · 远程控制器</title>
+    <style>
+        /* ============================================================ */
+        /* 主题变量                                                       */
+        /* ============================================================ */
+        :root {
+            --bg: #0b1220;
+            --bg-elev: #161f30;
+            --bg-elev-hover: #1c263a;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-strong: rgba(255, 255, 255, 0.12);
+            --text: #e6edf3;
+            --text-dim: #8b95a7;
+            --text-faint: #5a6478;
+            --accent: #fbbf24;
+            --accent-strong: #f59e0b;
+            --accent-glow: rgba(251, 191, 36, 0.45);
+            --accent-soft: rgba(251, 191, 36, 0.18);
+            --ok: #10b981;
+            --err: #ef4444;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-feature-settings: 'cv11', 'ss01';
+            color: var(--text);
+            background:
+                radial-gradient(ellipse 80% 50% at 50% 0%, rgba(251, 191, 36, 0.05) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(99, 102, 241, 0.06) 0%, transparent 60%),
+                var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 460px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* ============================================================ */
+        /* 标题                                                           */
+        /* ============================================================ */
+        .hero { text-align: center; padding: 4px 0 4px; }
+        .hero h1 {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+        .hero .subtitle {
+            font-size: 13px;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+        .hero .badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 3px 12px;
+            font-size: 10.5px;
+            color: var(--text-faint);
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            letter-spacing: 0.08em;
+            font-weight: 500;
+        }
+
+        /* ============================================================ */
+        /* LED 舞台                                                       */
+        /* ============================================================ */
+        .stage {
+            position: relative;
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 44px 28px 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+            overflow: hidden;
+        }
+        /* 灯亮时背景泛出暖光 */
+        .stage::before {
+            content: '';
+            position: absolute;
+            inset: -40%;
+            background: radial-gradient(circle at 50% 35%, var(--accent-glow), transparent 55%);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            pointer-events: none;
+        }
+        .stage:has(.led-icon.led-on)::before { opacity: 1; }
+
+        .led-wrap {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* 关闭时的微弱环境光圈 */
+        .led-wrap::before {
+            content: '';
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(100, 116, 139, 0.18), transparent 65%);
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        .stage:has(.led-icon.led-on) .led-wrap::before { opacity: 0; }
+
+        .led-icon {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 30% 28%, #7c8a9c, #475569 60%, #334155 100%);
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            box-shadow:
+                inset 0 10px 18px rgba(0, 0, 0, 0.45),
+                inset 0 -10px 18px rgba(255, 255, 255, 0.05),
+                0 12px 32px rgba(0, 0, 0, 0.45);
+            position: relative;
+            z-index: 2;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* LED 高光 */
+        .led-icon::after {
+            content: '';
+            position: absolute;
+            top: 18%;
+            left: 24%;
+            width: 32%;
+            height: 26%;
+            background: radial-gradient(ellipse, rgba(255, 255, 255, 0.18), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+        .led-icon.led-on {
+            background:
+                radial-gradient(circle at 30% 28%, #fffbeb, var(--accent) 45%, var(--accent-strong) 100%);
+            border-color: rgba(255, 255, 255, 0.35);
+            box-shadow:
+                inset 0 10px 20px rgba(255, 255, 255, 0.4),
+                inset 0 -10px 20px rgba(217, 119, 6, 0.5),
+                0 0 50px var(--accent-glow),
+                0 0 110px rgba(251, 191, 36, 0.22),
+                0 0 180px rgba(251, 191, 36, 0.1);
+            animation: led-pulse 2.6s ease-in-out infinite;
+        }
+        .led-icon.led-on::after { opacity: 0.7; }
+        @keyframes led-pulse {
+            0%, 100% { filter: brightness(1); transform: scale(1); }
+            50% { filter: brightness(1.18); transform: scale(1.025); }
+        }
+
+        /* 状态文字（CSS 伪元素跟随 .led-on/.led-off 自动切换） */
+        .led-status {
+            font-size: 14px;
+            color: var(--text-dim);
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            min-height: 22px;
+            transition: color 0.3s;
+        }
+        .led-status::before { content: 'LED 关闭'; }
+        .stage:has(.led-icon.led-on) .led-status::before { content: '已点亮'; color: var(--accent); }
+
+        /* 大圆角矩形按钮：颜色跟随 LED 联动（OFF=暗灰，ON=金黄） */
+        #toggleBtn {
+            position: relative;
+            padding: 13px 36px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            border: none;
+            border-radius: 999px;
+            /* 默认 = LED OFF = 暗灰 */
+            background: linear-gradient(180deg, #64748b, #475569 60%, #334155);
+            color: #e2e8f0;
+            cursor: pointer;
+            box-shadow:
+                0 5px 0 #1e293b,
+                0 8px 14px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.25s ease, color 0.25s ease;
+            outline: none;
+            min-width: 140px;
+        }
+        #toggleBtn:hover {
+            background: linear-gradient(180deg, #94a3b8, #64748b 60%, #475569);
+        }
+        #toggleBtn:focus-visible {
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.4), 0 5px 0 #1e293b;
+        }
+        #toggleBtn:active {
+            transform: translateY(4px);
+            box-shadow:
+                0 1px 0 #1e293b,
+                0 2px 4px rgba(0, 0, 0, 0.25),
+                inset 0 2px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        /* LED ON = 按钮变金黄（与 LED 颜色一致） */
+        .stage:has(.led-icon.led-on) #toggleBtn {
+            background: linear-gradient(180deg, #fcd34d, #fbbf24 60%, #f59e0b);
+            color: #1a1207;
+            box-shadow:
+                0 5px 0 #92400e,
+                0 8px 16px rgba(251, 191, 36, 0.32),
+                inset 0 1px 0 rgba(255, 255, 255, 0.45);
+        }
+        .stage:has(.led-icon.led-on) #toggleBtn:hover {
+            background: linear-gradient(180deg, #fde68a, #fcd34d 60%, #fbbf24);
+        }
+        .stage:has(.led-icon.led-on) #toggleBtn:focus-visible {
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.4), 0 5px 0 #92400e;
+        }
+        .stage:has(.led-icon.led-on) #toggleBtn:active {
+            box-shadow:
+                0 1px 0 #92400e,
+                0 2px 4px rgba(251, 191, 36, 0.25),
+                inset 0 2px 4px rgba(0, 0, 0, 0.18);
+        }
+
+        /* 按钮文字（动作提示：LED 当前是 OFF → 点了会"Turn On"） */
+        #toggleBtn .btn-text::before { content: 'Turn On'; }
+        .stage:has(.led-icon.led-on) #toggleBtn .btn-text::before { content: 'Turn Off'; }
+
+        /* pending 等待态：JS 在 click 时加 .pending，applyState 真回传时移除 */
+        /* 用深蓝灰 + spinner，跟 ON/OFF 都能区分（ON 时颜色明显反差） */
+        #toggleBtn.pending {
+            pointer-events: none;
+            cursor: wait;
+            background: #2d3a52 !important;
+            color: var(--text-dim) !important;
+            box-shadow:
+                inset 0 2px 8px rgba(0, 0, 0, 0.45),
+                0 1px 0 #1a2332,
+                0 3px 8px rgba(0, 0, 0, 0.3) !important;
+            transform: translateY(2px);
+        }
+        #toggleBtn.pending .btn-text::before { content: '等待中'; }
+        #toggleBtn.pending .btn-spinner {
+            display: inline-block;
+            width: 13px;
+            height: 13px;
+            margin-left: 10px;
+            border: 2px solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: btn-spin 0.7s linear infinite;
+            vertical-align: -2px;
+        }
+        #toggleBtn:not(.pending) .btn-spinner { display: none; }
+        @keyframes btn-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================================ */
+        /* 通用卡片                                                       */
+        /* ============================================================ */
+        .card {
+            background: var(--bg-elev);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 11px 16px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.015);
+        }
+        .card-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* ============================================================ */
+        /* 连接状态                                                       */
+        /* ============================================================ */
+        .status-card {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-text {
+            font-size: 13px;
+            color: var(--text);
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-faint);
+            flex: none;
+            position: relative;
+            transition: background 0.3s;
+        }
+        .dot::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .dot.ok {
+            background: var(--ok);
+            color: var(--ok);
+        }
+        .dot.ok::after {
+            opacity: 1;
+            animation: dot-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        .dot.error { background: var(--err); }
+        @keyframes dot-ping {
+            0% { transform: scale(0.5); opacity: 0.9; }
+            80%, 100% { transform: scale(2.4); opacity: 0; }
+        }
+
+        /* ============================================================ */
+        /* 日志                                                           */
+        /* ============================================================ */
+        .log {
+            counter-reset: loglines;
+            height: 200px;
+            overflow-y: auto;
+            padding: 8px 0;
+            font-family: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Menlo, Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            color: var(--text-dim);
+        }
+        .log::-webkit-scrollbar { width: 6px; }
+        .log::-webkit-scrollbar-track { background: transparent; }
+        .log::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+        }
+        .log::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.18); }
+        .log > div {
+            counter-increment: loglines;
+            padding: 3px 16px 3px 14px;
+            border-left: 2px solid transparent;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+            word-break: break-all;
+            white-space: pre-wrap;
+        }
+        .log > div:hover {
+            background: rgba(255, 255, 255, 0.025);
+            border-left-color: var(--accent);
+            color: var(--text);
+        }
+        .log > div:last-child {
+            animation: log-flash 0.7s ease-out;
+        }
+        @keyframes log-flash {
+            from { background: var(--accent-soft); }
+            to { background: transparent; }
+        }
+        .log-count {
+            font-size: 11px;
+            color: var(--text-faint);
+            font-family: 'SF Mono', 'Cascadia Code', monospace;
+            font-variant-numeric: tabular-nums;
+        }
+        .log-count::after { content: counter(loglines) ' 条'; }
+
+        /* ============================================================ */
+        /* 响应式                                                         */
+        /* ============================================================ */
+        @media (max-width: 480px) {
+            .app { gap: 14px; }
+            .stage { padding: 32px 20px 26px; gap: 18px; }
+            .led-wrap, .led-wrap::before { width: 180px; height: 180px; }
+            .led-icon { width: 140px; height: 140px; }
+            .hero h1 { font-size: 19px; }
+        }
+    </style>
+</head>
+<body data-page-node-id="5VmEHNu0VD82kg5H9G1yra">
+    <main class="app" data-page-node-id="O6ab2u3qfRkPY42QfXoFUW">
+        <header class="hero" data-page-node-id="dYyYcEnXZkTlzzuEt3WihV">
+            <h1 data-page-node-id="0HKRBMPzAKDDKE6yC99YxB">Tinkercad LED 控制器</h1>
+            <p class="subtitle" data-page-node-id="wLxeH2wUJE3XCH22Lduvxo">Serial Bridge 远程控制 Arduino 仿真</p>
+            <span class="badge" data-page-node-id="oblUXULKPI8taQr16hgssz">MV3 · 原样中转</span>
+        </header>
+
+        <section class="stage" data-page-node-id="NfHBQgb92DXeXwqsMBBcYr">
+            <div class="led-wrap" data-page-node-id="rrYintKfegoZaELB94UC0r">
+                <div class="led-icon led-off" id="ledIcon" data-page-node-id="WMTzfT67jCncHQvQ29MWXy"></div>
+            </div>
+            <div class="led-status" data-page-node-id="cNAjx2CNjV0U5wPaY0bT7C"></div>
+            <button id="toggleBtn" type="button" aria-label="切换 LED 状态" data-page-node-id="3DzlAFrBYaYJimYyOuGXsx">
+                <span class="btn-text"></span>
+                <span class="btn-spinner"></span>
+            </button>
+        </section>
+
+        <div class="card status-card" data-page-node-id="HGAd9BNOKBzFNBrqFqmhBP">
+            <span class="dot" id="connDot" data-page-node-id="kTrPb7xsdIDgB2Z9uEuDLw"></span>
+            <span id="connText" class="status-text" data-page-node-id="MUWVWAYgtVSVCMfSbixDu6">连接中…</span>
+        </div>
+
+        <div class="card" data-page-node-id="C0BHtzO0j33ntg2Lk0wzV7">
+            <div class="card-header" data-page-node-id="MwotRL5l5DEe9YKp0LYG4O">
+                <span class="card-title" data-page-node-id="FTb25Ou9wHXBDDC9HCtWPS">串口日志</span>
+                <span class="log-count" data-page-node-id="A7t2pk60LTckl9WXFQvax7"></span>
+            </div>
+            <div class="log" id="logBox" data-page-node-id="bWIUZZ4Y9bcYqUJMHgiLcF"></div>
+        </div>
+    </main>
+
+    <script>
+        // 同源调用：led.html 由 led.js 在同一端口 serve，直接用相对路径
+        const CMD_API = "/cmd";
+        const LOG_API = "/log";
+        const GETLOG_API = "/getLog";
+        const HEALTH_API = "/health";
+
+        const ledIcon = document.getElementById('ledIcon');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const connDot = document.getElementById('connDot');
+        const connText = document.getElementById('connText');
+        const logBox = document.getElementById('logBox');
+
+        let currentLedState = "off";
+        let cursor = 0;
+        let useStructuredLog = true;
+        let pendingTimer = null;
+
+        function appendLog(text) {
+            const line = document.createElement('div');
+            line.textContent = text;
+            logBox.appendChild(line);
+            while (logBox.childElementCount > 100) logBox.removeChild(logBox.firstChild);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        function applyState(state) {
+            if (!state) return;
+            currentLedState = state;
+            ledIcon.className = state === "on" ? "led-icon led-on" : "led-icon led-off";
+            // 收到 Arduino 真回传的状态，解除按钮 pending 等待态
+            toggleBtn.classList.remove('pending');
+            clearTimeout(pendingTimer);
+        }
+
+        // 优先使用结构化日志（含历史），老服务端回退到 /getLog
+        function syncStatus() {
+            const tryStructured = () => fetch(`${LOG_API}?n=50&since=${cursor}&t=${Date.now()}`)
+                .then(res => { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+                .then(data => {
+                    useStructuredLog = true;
+                    (data.lines || []).forEach(item => {
+                        cursor = Math.max(cursor, item.seq);
+                        appendLog(item.text);
+                        try {
+                            const obj = JSON.parse(item.text);
+                            if (obj && obj.led) applyState(obj.led);
+                        } catch (e) { /* 非 JSON 行，只展示 */ }
+                    });
+                    setConn(true);
+                });
+
+            const tryLegacy = () => fetch(`${GETLOG_API}?t=${Date.now()}`)
+                .then(res => res.text())
+                .then(txt => {
+                    useStructuredLog = false;
+                    if (!txt) { setConn(true); return; }
+                    try {
+                        const obj = JSON.parse(txt);
+                        if (obj && obj.led) applyState(obj.led);
+                    } catch (e) { /* 非 JSON */ }
+                    setConn(true);
+                });
+
+            const task = useStructuredLog ? tryStructured() : tryLegacy();
+            task.catch(err => {
+                if (useStructuredLog) { tryLegacy().catch(() => setConn(false, err.message)); }
+                else setConn(false, err.message);
+            });
+        }
+
+        function setConn(ok, detail) {
+            connDot.className = 'dot ' + (ok ? 'ok' : 'error');
+            connText.textContent = ok
+                ? 'bridge service connected'
+                : 'bridge service unreachable' + (detail ? ' (' + detail + ')' : '');
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            const target = currentLedState === "on" ? "off" : "on";
+            // 进入 pending 等待态：按钮变灰、显示"等待中"+ 旋转图标，避免长延迟下用户以为没反应
+            toggleBtn.classList.add('pending');
+            clearTimeout(pendingTimer);
+            pendingTimer = setTimeout(() => toggleBtn.classList.remove('pending'), 6000);
+            fetch(CMD_API, {
+                method: "POST",
+                body: JSON.stringify({ led: target }),
+                headers: { "Content-Type": "text/plain" }
+            }).catch(err => {
+                console.error("Failed to send command", err);
+                toggleBtn.classList.remove('pending');
+                clearTimeout(pendingTimer);
+            });
+        });
+
+        fetch(HEALTH_API).then(r => r.ok ? setConn(true) : setConn(false)).catch(() => {});
+        syncStatus();
+        setInterval(syncStatus, 2500);
+    </script>
+</body>
+</html>
