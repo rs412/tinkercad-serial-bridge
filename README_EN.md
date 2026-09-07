@@ -118,7 +118,7 @@ The extension speaks the following protocol\. `sample/led.js` implements all of 
 - New status panel: service/page status, last traffic, DOM probe, test connection, manual command
 - Input validation \(URL normalization, interval clamping\) and on\-demand permission requests for non\-localhost origins
 - Service gained a ring log, `/log`, `/health` and queue limits while keeping every legacy endpoint
-- Real 16/48/128 icon sizes; screenshots and backups moved to `docs/`
+- Real 16/48/128 icon
 
 ### 26\.8\.13
 
