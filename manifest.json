@@ -1,30 +1,47 @@
 {
     "manifest_version": 3,
-    "name": "tinkercad-serial-bridge",
-    "version": "26.8.13",
-    "description": "Tinkercad serial bridge for data forwarding",
-    "permissions": ["storage"],
+    "name": "Tinkercad Serial Bridge",
+    "version": "26.9.7",
+    "description": "Tinkercad Arduino 仿真串口双向桥接",
+    "minimum_chrome_version": "110",
+    "permissions": [
+        "storage"
+    ],
     "host_permissions": [
         "https://www.tinkercad.com/*",
-        "http://localhost:8080/*"
+        "http://localhost:*/*",
+        "http://127.0.0.1:*/*",
+        "https://localhost:*/*"
+    ],
+    "optional_host_permissions": [
+        "<all_urls>"
     ],
     "action": {
         "default_popup": "popup.html",
+        "default_title": "Tinkercad Serial Bridge",
         "default_icon": {
-            "16": "icon.png",
-            "48": "icon.png"
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png"
         }
     },
     "icons": {
-        "16": "icon.png",
-        "48": "icon.png",
-        "128": "icon.png"
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    },
+    "background": {
+        "service_worker": "background.js"
     },
     "content_scripts": [
         {
-            "matches": ["https://www.tinkercad.com/*"],
-            "js": ["content.js"],
-            "run_at": "document_idle"
+            "matches": [
+                "https://www.tinkercad.com/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_idle",
+            "all_frames": false
         }
     ]
 }
