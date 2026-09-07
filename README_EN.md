@@ -30,7 +30,6 @@ tinkercad-serial-bridge/
 ├── popup.js          # Panel logic
 ├── icons/            # 16 / 48 / 128 icons
 ├── sample/           # Runnable demo (service + control page + Arduino sketch)
-├── docs/             # Store screenshots and source artwork
 └── README.md
 ```
 
