@@ -30,7 +30,6 @@ tinkercad-serial-bridge/
 ├── popup.js          # 面板逻辑
 ├── icons/            # 16 / 48 / 128 图标
 ├── sample/           # 完整可运行示例（服务端 + 控制页 + Arduino 代码）
-├── docs/             # 商店截图与源图（不参与插件打包逻辑）
 └── README.md
 ```
 
