@@ -130,6 +130,4 @@ The extension speaks the following protocol\. `sample/led.js` implements all of 
 
   Developer: rs412
 
-  Email: redshift@yeah.net
-
   Github: https://github.com/rs412/
