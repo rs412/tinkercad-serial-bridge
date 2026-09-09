@@ -134,6 +134,4 @@ node led.js
 
   Developer: rs412
 
-  Email: redshift@yeah.net
-
   Github: https://github.com/rs412/
