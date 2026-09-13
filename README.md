@@ -1,5 +1,5 @@
 # Tinkercad Serial Bridge
-
+![TSB](tinker-serial-bridge-poster-720p.png)
 一款 Manifest V3 浏览器插件，为 Tinkercad Arduino 仿真提供双向串口数据桥接：把仿真串口输出转发给本地/远程服务，并把外部指令写回仿真串口。
 
 支持自定义服务地址、一键启停、实时运行状态、多标签页防抢指令，配置自动保存。
